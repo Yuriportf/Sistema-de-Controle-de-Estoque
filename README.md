@@ -32,6 +32,6 @@ Este é um sistema simples para gerenciar o estoque de itens, criado com Python,
 - **Funções Principais**:
   - **calcular_total_itens**: Soma as quantidades dos itens no estoque.
   - **calcular_valor_total**: Calcula o valor total do estoque.
-  - **formatar_valor**: Formata o preço para o padrão monetário brasileiro.
+
 
 ---
