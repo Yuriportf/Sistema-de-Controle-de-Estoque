@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Estoque Prime</h1>
+    </header>
+    <button id="toggle-sidebar" class="toggle-btn">☰ Gerenciar Estoque</button>
+
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-box">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <span>{{ message }}</span>
+                            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="container">
+        <aside class="gestao-estoque">
+            <h2>Gerenciar Estoque</h2>
+
+            <section>
+                <h3>Adicionar Item</h3>
+                <form action="{{ url_for('adicionar_item') }}" method="post">
+                    <input type="text" name="codigo" placeholder="Código" required>
+                    <input type="text" name="nome" placeholder="Nome" required>
+                    <input type="number" name="quantidade" placeholder="Quantidade" required>
+                    <input type="number" step="0.01" name="preco" placeholder="Preço Unitário" required>
+                    <input type="date" name="data_entrada" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+            </section>
+
+            <section>
+                <h3>Localizar Item</h3>
+                <form action="{{ url_for('localizar_item') }}" method="post">
+                    <input type="text" name="termo" placeholder="Buscar por nome ou código" required>
+                    <button type="submit">Localizar</button>
+                </form>
+            </section>
+
+            <section>
+                <h3>Alterar ou Remover Item</h3>
+                <form action="{{ url_for('alterar_ou_remover') }}" method="post">
+                    <label for="codigo">Código:</label>
+                    <input type="text" id="codigo" name="codigo" required>
+                    
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" required>
+                    
+                    <label for="quantidade">Quantidade:</label>
+                    <input type="number" id="quantidade" name="quantidade" min="0" required>
+                    
+                    <label for="preco">Preço Unitário:</label>
+                    <input type="text" id="preco" name="preco" placeholder="Ex: 19.99" required>
+                    
+                    <label for="confirmacao">Lembre-se: esta ação não poderá ser desfeita.Digite "SIM" para confirmar. </label>
+                    <input type="text" id="confirmacao" name="confirmacao" required>
+                    
+                    <div class="botoes-acoes">
+                        <button type="submit" name="acao" value="alterar" class="btn-alterar">Alterar</button>
+                        <button type="submit" name="acao" value="remover" class="btn-remover">Remover</button>
+                    </div>
+                </form>
+            </section>
+
+            <section>
+                <h3>Importação e Download</h3>
+                <form action="{{ url_for('importar_itens') }}" method="post" enctype="multipart/form-data">
+                    <input type="file" name="arquivo" required>
+                    <button type="submit">Importar</button>
+                </form>
+                <form action="{{ url_for('exportar_itens') }}" method="post">
+                    <button type="submit">Baixar CSV</button>
+                </form>
+            </section>
+        </aside>
+
+        <!-- Tabela menor com os totais -->
+        <table class="table total-estoque">
+            <thead>
+                <tr>
+                    <th>Total de Itens</th>
+                    <th>Valor Total do Estoque</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ total_itens }}</td>
+                    <td>{{ valor_total }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Tabela principal de itens -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código ID</th>
+                    <th>Nome</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Valor Total em Estoque</th>
+                    <th>Data de Entrada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td>{{ item.codigo }}</td>
+                    <td>{{ item.nome }}</td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>{{ item.preco | formatar_valor }}</td>
+                    <td>{{ (item.quantidade * item.preco) | formatar_valor }}</td>
+                    <td>{{ item.data_entrada.strftime('%d/%m/%Y') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if mostrar_botao and request.endpoint == 'localizar_item' %}
+        <section>
+            <button onclick="window.location.href='{{ url_for('estoque_total') }}'"
+                    style="margin-top: 10px;
+                           background-color: #3a52a1; /* Azul escuro */
+                           color: white; 
+                           border: none; 
+                           padding: 12px 24px; /* Aumentei o padding para um botão mais robusto */
+                           font-size: 16px; 
+                           border-radius: 5px; 
+                           cursor: pointer; 
+                           transition: background-color 0.3s, transform 0.2s; /* Adicionei o efeito de transformação */
+                           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombrinha suave */
+                           text-align: center;">
+                Voltar ao Estoque Total
+            </button>
+        </section>
+    {% endif %}
+
+        {% if not itens %}
+        <p>Nenhum item encontrado.</p>
+        {% endif %}
+    </div>
+    <script>
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            let sidebar = document.querySelector('.gestao-estoque');
+            let container = document.querySelector('.container');
+        
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active'); // Oculta a sidebar
+                container.classList.add('full-width'); // Expande a tabela
+            } else {
+                sidebar.classList.add('active'); // Exibe a sidebar
+                container.classList.remove('full-width'); // Ajusta a tabela de volta
+            }
+        });
+        </script>
+        
+        
+        
+
+    <footer>Todos os direitos reservados, Yuri 2025</footer>
+</body>
+</html>
