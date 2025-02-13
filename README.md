@@ -21,17 +21,9 @@ Este é um sistema simples para gerenciar o estoque de itens, criado com Python,
 - **✏️ Alterar ou 🗑️ Remover Itens**: Altere ou remova itens com base no código.
 - **🔍 Pesquisar Itens**: Pesquise itens pelo nome ou código e veja resultados rapidamente.
 - **📥 Importar e 📤 Exportar Dados**: Importe itens de um arquivo CSV ou exporte todos os itens do estoque para CSV.
-- **🔙 Voltar ao Estoque Total**: A opção "Voltar ao Estoque Total" aparece após uma pesquisa, para retornar à lista completa de itens.
 
 ---
 
-## 🧑‍💻 Lógica do Código
-
-- **Banco de Dados**: Utilizamos SQLite para armazenar os itens do estoque, com os campos: `id`, `codigo`, `nome`, `quantidade`, `preco` e `data_entrada`.
   
-- **Funções Principais**:
-  - **calcular_total_itens**: Soma as quantidades dos itens no estoque.
-  - **calcular_valor_total**: Calcula o valor total do estoque.
 
 
----
