@@ -1,0 +1,200 @@
+/* Resetando margens e padding padrão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Fundo suave com gradiente */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #1a1a2e, #16213e, #0f3460);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    padding-top: 60px; /* Deixando espaço para o header fixado */
+    padding-bottom: 60px; /* Deixando espaço para o footer fixado */
+}
+
+/* Cabeçalho fixado */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 0.8rem 0;
+    background-color: rgba(20, 20, 50, 0.95);
+    color: #f1f1f1;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid #3498db;
+    z-index: 1000;
+}
+
+/* Seção de introdução */
+.intro {
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    padding: 20px;
+    max-width: 800px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.intro-title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.intro-text {
+    font-size: 14px;
+}
+
+
+/* Login Container */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px; /* Aumenta o tamanho do container */
+    margin-top: 20px;
+}
+.login-title{
+    color: black;
+}
+p{  margin-top: 20px;
+    text-align: center;
+    color:#0f3460; 
+}
+/* Cartão de Login */
+.login-card {
+    background: #ffffff;
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    width: 5%; /* Define um tamanho fixo maior */
+    min-width: 500px; /* Garante que não diminua abaixo disso */
+    height: 320px;
+    text-align: left;
+}
+
+
+/* Formulário de Login */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-input {
+    
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+.form-input:focus {
+    border-color: #4e54c8;
+    box-shadow: 0 0 5px rgba(78, 84, 200, 0.5);
+    outline: none;
+}
+
+.btn-submit {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-submit:hover {
+    background-color: #1f618d;
+    transform: translateY(-2px);
+}
+
+/* Links */
+a {
+    color: #0f3460;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Mensagens de alerta */
+.login-alert {
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 8px;
+    background-color: #e74c3c;
+    color: white;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Seção de Características */
+.features {
+    text-align: center;
+    color: #fff;
+    padding: 20px;
+    max-width: 800px;
+    background: rgba(20, 20, 50, 0.8);
+    border-radius: 10px;
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.features-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-item {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Rodapé fixado */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(20, 20, 50, 0.95);
+    color: #f1f1f1;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 60px;
+    width: 100%;
+    z-index: 1000;
+    font-size: 0.9rem;
+    border-top: 2px solid #3498db;
+}

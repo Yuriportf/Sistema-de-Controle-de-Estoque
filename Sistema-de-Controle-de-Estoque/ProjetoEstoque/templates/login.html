@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login - Sistema de Estoque</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header-title">Sistema de Estoque Prime</h1>
+    </header>
+
+    <section class="intro">
+        <h1 class="intro-title">Transforme a Gestão do Seu Estoque com Facilidade e Eficiência!</h1>
+        <h3 class="intro-text">Você está cansado de perder o controle do seu estoque? Chegou a hora de otimizar sua gestão e ganhar mais eficiência com o nosso Sistema de Controle de Estoque!</h3>
+    </section>
+
+    <div class="login-container">
+        <div class="login-card">
+            <h3 class="login-title">Login</h3>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} login-alert">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}" class="login-form">
+                <div class="form-group">
+                    <label for="usuario" class="form-label">Nome de Usuário ou E-mail</label>
+                    <input type="text" class="form-input" id="usuario" name="usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="senha" class="form-label">Senha</label>
+                    <input type="password" class="form-input" id="senha" name="senha" required>
+                </div>
+                <button type="submit" class="btn-submit">Entrar</button>
+            </form>
+
+            <p class="register-text">Não tem uma conta? <a href="{{ url_for('registro') }}" class="register-link">Registrar-se</a></p>
+        </div>
+    </div>
+
+    <section class="features">
+        <h2 class="features-title">Por que escolher o nosso sistema?</h2>
+        <ul class="features-list">
+            <li class="feature-item">🔍 <strong>Visibilidade Completa:</strong> Acompanhe a quantidade de produtos e valores de forma simples e precisa.</li>
+            <li class="feature-item">📦 <strong>Organização:</strong> Classifique, organize e encontre o que precisa com rapidez.</li>
+            <li class="feature-item">🔒 <strong>Segurança:</strong> Com login protegido e backups automáticos, seus dados estarão sempre seguros.</li>
+        </ul>
+    </section>
+
+    <footer class="footer">Todos os direitos reservados, Yuri 2025</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
