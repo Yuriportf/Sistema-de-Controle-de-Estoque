@@ -53,4 +53,4 @@ O sistema oferece diversas funcionalidades para facilitar a gestão do estoque:
 - [GitHub](https://github.com/Yuriportf)
 - [Instagram](https://www.instagram.com/_yurioliv_/)
 - [X (Twitter)](https://x.com/0Ystrikerysoli)
-- Email: 7777@gmail.com
+- [E-mail:yurioliv7777@gmail.com](mailto:yurioliv7777@gmail.com)
