@@ -47,5 +47,10 @@ O sistema oferece diversas funcionalidades para facilitar a gestão do estoque:
 - 🔍 **Consulta de Itens**: Visualize os itens cadastrados, com detalhes completos e possibilidade de filtrar informações.
 - ✏️ **Edição de Itens**: Atualize as informações dos itens do estoque sempre que necessário, como quantidade e preço.
 - 🔒 **Armazenamento Seguro de Senhas**: As senhas dos usuários são armazenadas de forma segura usando hashing.
-  
 
+## 📱 Contatos
+
+- [GitHub](https://github.com/Yuriportf)
+- [Instagram](https://www.instagram.com/_yurioliv_/)
+- [X (Twitter)](https://x.com/0Ystrikerysoli)
+- 📧 Email: 7777@gmail.com
