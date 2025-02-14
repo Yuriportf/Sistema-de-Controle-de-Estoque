@@ -327,7 +327,7 @@ def exportar_itens():
                      as_attachment=True,
                      download_name='itens.csv')
 
-# Função para importar itens
+
 from datetime import datetime
 
 from datetime import datetime
@@ -339,46 +339,91 @@ def importar_itens():
         return redirect(url_for('estoque_total'))
 
     file = request.files['file']
+    
+    # Verifique se o arquivo foi selecionado
     if file.filename == '':
         flash("Nenhum arquivo selecionado.", "error")
         return redirect(url_for('estoque_total'))
 
+    # Verifique se o arquivo tem a extensão .csv
     if file and file.filename.endswith('.csv'):
         try:
-            # Tenta detectar o delimitador automaticamente
+            # Tenta carregar o CSV e detecta o delimitador automaticamente
             df = pd.read_csv(file, sep=None, engine='python', encoding='utf-8-sig')
 
+            # Renomeia colunas para corresponder ao esperado
+            colunas_correspondencia = {
+                'Código ID': 'codigo',
+                'Nome': 'nome',
+                'Quantidade': 'quantidade',
+                'Preço Unitário': 'preco'
+            }
+            df = df.rename(columns=colunas_correspondencia)
+            
+            # Remove colunas desnecessárias
+            colunas_necessarias = ['codigo', 'nome', 'quantidade', 'preco']
+            df = df[colunas_necessarias]
+            
             # Normaliza os nomes das colunas
             df.columns = [col.strip().lower().replace(" ", "_") for col in df.columns]
             
-            # Verifique as colunas para garantir que a transformação tenha sido correta
-            print(df.columns)  # Exibe as colunas normalizadas
-
-            # Usa todas as colunas disponíveis no CSV
-            colunas_disponiveis = df.columns.to_list()
+            itens_importados = []
 
             for _, row in df.iterrows():
-                codigo = row.get(colunas_disponiveis[0])
-                nome = row.get(colunas_disponiveis[1])
-                quantidade = row.get(colunas_disponiveis[2])
-                preco = row.get(colunas_disponiveis[3])
+                # Obtendo os dados do CSV
+                codigo = row.get('codigo')
+                nome = row.get('nome')
+                quantidade = row.get('quantidade')
+                preco = row.get('preco')
+
+                # Verificação de dados para garantir que são válidos
+                if not codigo or not nome or quantidade is None or preco is None:
+                    continue  # Se algum dado estiver faltando, ignore a linha
+
+                # Verifique se quantidade e preco são válidos
+                try:
+                    quantidade = int(quantidade)  # Verifica se quantidade é um inteiro
+                    preco = float(preco)  # Verifica se preco é um float
+                except (ValueError, TypeError):
+                    continue  # Se houver erro ao converter, ignore a linha
 
                 # Usa a data atual para todos os itens
                 data_entrada = datetime.today().date()
 
                 # Verifica se o item já existe no banco
-                if not Item.query.filter_by(codigo=codigo).first():
+                item_existente = Item.query.filter_by(codigo=codigo).first()
+                if not item_existente:
+                    # Adiciona o item na lista de inserção
                     item = Item(codigo=codigo, nome=nome, quantidade=quantidade, preco=preco, data_entrada=data_entrada)
-                    db.session.add(item)
+                    itens_importados.append(item)
 
-            db.session.commit()
-            flash("Itens importados com sucesso!", "success")
+            if itens_importados:
+                db.session.bulk_save_objects(itens_importados)  # Inserção eficiente
+                db.session.commit()
+                flash("Itens importados com sucesso!", "success")
+            else:
+                flash("Nenhum item válido para importar.", "warning")
 
+            # Recarregar os itens e mostrar na página
+            itens = Item.query.all()
+            total_itens = len(itens)
+            valor_total = sum(item.preco * item.quantidade for item in itens)
+            return render_template('index.html', 
+                                  itens=itens, 
+                                  total_itens=total_itens, 
+                                  valor_total=formatar_valor(valor_total), 
+                                  mostrar_botao=True)
+            
         except Exception as e:
             flash(f"Erro ao importar itens: {str(e)}", "error")
             db.session.rollback()
 
+    else:
+        flash("Por favor, envie um arquivo CSV.", "error")
+
     return redirect(url_for('estoque_total'))
+
+
 
 
 
