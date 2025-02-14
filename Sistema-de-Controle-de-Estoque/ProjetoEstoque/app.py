@@ -5,7 +5,7 @@ import pandas as pd
 import io
 import os
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash  # Segurança das senhas
+from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Item, User
 
 # Configuração do Flask
@@ -14,13 +14,13 @@ app = Flask(__name__, static_folder='static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///estoque.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'sua_chave_secreta_super_segura')
-app.config['SESSION_PERMANENT'] = False  # Garante que a sessão seja recriada corretamente
-app.config['SESSION_TYPE'] = 'filesystem'  # Alternativa para evitar problemas de sessão
+app.config['SESSION_PERMANENT'] = False 
+app.config['SESSION_TYPE'] = 'filesystem'  
 
-# Inicializando o banco de dados
+
 db.init_app(app)
 
-# Criando as tabelas dentro do contexto da aplicação
+
 with app.app_context():
     db.create_all()
 
@@ -43,9 +43,9 @@ def formatar_valor(valor):
         return 'R$ 0,00'
     except ValueError:
         return 'R$ 0,00'
-# Função para obter um item específico pelo ID
+
 def get_item_by_id(item_id):
-    return Item.query.get(item_id)  # Utiliza o SQLAlchemy para buscar o item pelo ID
+    return Item.query.get(item_id)  
 
 
 # ----------------- ROTAS PRINCIPAIS -----------------
@@ -53,27 +53,21 @@ def get_item_by_id(item_id):
 def index():
     if 'usuario' not in session:
         flash("Você precisa fazer login para acessar esta página!", "error")
-        return redirect(url_for('login'))  # Redireciona para login se não estiver logado
+        return redirect(url_for('login'))  
     
-    # Recupera os itens do banco de dados
+   
     itens = Item.query.all()
-
-    # Soma corretamente as quantidades dos itens
     total_itens = sum(item.quantidade for item in itens if item.quantidade is not None)
-
-    # Calcula o valor total do estoque corretamente
     valor_total = sum((item.quantidade or 0) * (item.preco or 0) for item in itens)
-    
-    # Formata o valor total para exibição
-    valor_total_formatado = "{:,.2f}".format(valor_total)  # Formato brasileiro (1.000,00)
+    valor_total_formatado = "{:,.2f}".format(valor_total) 
 
-    # Define se o botão deve ser mostrado ou não
+    
     mostrar_botao = session.get('botao_ativado', False)
 
     return render_template(
         'index.html', 
         itens=itens, 
-        total_itens=total_itens,  # Apenas a soma da coluna "quantidade"
+        total_itens=total_itens, 
         valor_total=valor_total_formatado, 
         mostrar_botao=mostrar_botao
     )
@@ -83,7 +77,7 @@ def index():
 # Rota inicial
 @app.route('/')
 def home():
-    return redirect(url_for('login'))  # Sempre leva para a tela de login ao acessar "/"
+    return redirect(url_for('login'))  
 
 # Rota de login
 @app.route('/login', methods=['GET', 'POST'])
@@ -91,22 +85,20 @@ def login():
     if request.method == 'POST':
         nome = request.form['usuario']
         senha = request.form['senha']
-        
-        # Buscar o usuário no banco
         usuario = User.query.filter_by(nome=nome).first()
         
-        # Verificar se o usuário existe e se a senha está correta
+      
         if usuario:
             if usuario.check_password(senha):
-                session['usuario'] = usuario.nome  # Cria a sessão com o nome do usuário
+                session['usuario'] = usuario.nome 
                 flash("Login realizado com sucesso!", "success")
-                return redirect(url_for('estoque_total'))  # Redirecionar para a página de estoque total
+                return redirect(url_for('estoque_total'))  
             else:
                 flash("Senha incorreta.", "error")
         else:
             flash("Usuário não encontrado.", "error")
     
-    return render_template('login.html')  # Caso o método seja GET ou login falhe
+    return render_template('login.html')  
 
 
 
@@ -150,15 +142,14 @@ def registro():
 def estoque_total():
     itens = Item.query.all()  # Obtém todos os itens (alterei aqui)
     total_itens = len(itens)
-    valor_total = sum(item.preco * item.quantidade for item in itens)  # Calculo do valor total
-
-    mostrar_botao = True  # Defina a lógica para mostrar o botão de acordo com o contexto
+    valor_total = sum(item.preco * item.quantidade for item in itens)  
+    mostrar_botao = True  
 
     # Verifique se está sendo solicitado um item específico para alteração/remover
     item = None
     if 'item_id' in request.args:  # Verifica se um item_id foi passado na URL
         item_id = request.args['item_id']
-        item = get_item_by_id(item_id)  # Chama a função corretamente passando o item_id
+        item = get_item_by_id(item_id)  
 
     return render_template('index.html', 
                            itens=itens, 
@@ -172,22 +163,21 @@ def estoque_total():
 @app.route('/adicionar', methods=['POST'])
 def adicionar_item():
     try:
-        # Captura os dados do formulário
         codigo = request.form.get('codigo', '').strip().upper()
         nome = request.form.get('nome', '').strip()
         quantidade = request.form.get('quantidade', type=int)
         preco = float(request.form.get('preco', '0').replace('.', '').replace(',', '.'))
         data_entrada = request.form.get('data_entrada', '')
 
-        # Validação dos campos
+      
         if not codigo or not nome or quantidade is None or quantidade < 0 or preco <= 0 or not data_entrada:
             flash('Preencha todos os campos corretamente!', 'error')
-            return redirect(url_for('estoque_total'))  # Alterar 'index' para a rota correta
+            return redirect(url_for('estoque_total'))  
 
         # Verificação se o código já existe
         if Item.query.filter_by(codigo=codigo).first():
             flash('Código já existe no sistema!', 'error')
-            return redirect(url_for('estoque_total'))  # Alterar 'index' para a rota correta
+            return redirect(url_for('estoque_total'))  
 
         # Processamento da data de entrada
         data_entrada = datetime.strptime(data_entrada, '%Y-%m-%d')
@@ -205,7 +195,7 @@ def adicionar_item():
         flash(f'Erro ao adicionar item: {str(e)}', 'error')
 
     # Redireciona para a página de estoque_total
-    return redirect(url_for('estoque_total'))  # Alterar 'index' para a rota correta
+    return redirect(url_for('estoque_total'))  
 
 @app.route('/localizar', methods=['POST'])
 def localizar_item():
@@ -216,13 +206,13 @@ def localizar_item():
     else:
         itens = Item.query.filter(Item.nome.ilike(f'%{termo}%')).all()
     
-    total_itens = sum(item.quantidade for item in itens)  # Agora reflete apenas os itens pesquisados
+    total_itens = sum(item.quantidade for item in itens)  # reflete apenas os itens pesquisados
 
     session['botao_ativado'] = bool(itens)
 
     return render_template('index.html', 
                            itens=itens, 
-                           total_itens=total_itens,  # Agora está correto
+                           total_itens=total_itens,  
                            valor_total=formatar_valor(calcular_valor_total()), 
                            mostrar_botao=True)
 
@@ -249,7 +239,7 @@ def remover():
             if all_items:
                 for item in all_items:
                     db.session.delete(item)  # Remove cada item
-                db.session.commit()  # Commit para salvar as alterações
+                db.session.commit() 
                 flash("Todos os itens foram removidos com sucesso!", "success")
             else:
                 flash("Nenhum item no estoque para ser removido.", "error")
@@ -300,7 +290,7 @@ def alterar():
     preco = request.form.get('preco', '').strip()
     tipo_item = request.form.get('tipo_item', '').strip()
 
-    # Atualiza os campos apenas se o valor não estiver vazio
+    # Atualiza se o valor não estiver vazio
     if nome_item:
         item_encontrado.nome = nome_item
     if quantidade.isdigit() and int(quantidade) >= 0:
@@ -318,15 +308,13 @@ def alterar():
         db.session.rollback()
         flash(f"Erro ao alterar item: {str(e)}", "error")
 
-    return redirect(url_for('index'))  # Redireciona após a alteração
-
-
+    return redirect(url_for('index')) 
 
 # Função para exportar itens
 @app.route('/exportar', methods=['POST'])
 def exportar_itens():
     itens = Item.query.all()
-    data = [item.to_dict() for item in itens]  # Agora pode chamar item.to_dict() sem erro
+    data = [item.to_dict() for item in itens]  # chama item.to_dict() sem erro
     df = pd.DataFrame(data)
 
     # Criação de um arquivo CSV em memória
