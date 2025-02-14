@@ -328,6 +328,10 @@ def exportar_itens():
                      download_name='itens.csv')
 
 # Função para importar itens
+from datetime import datetime
+
+from datetime import datetime
+
 @app.route('/importar', methods=['POST'])
 def importar_itens():
     if 'file' not in request.files:
@@ -346,6 +350,9 @@ def importar_itens():
 
             # Normaliza os nomes das colunas
             df.columns = [col.strip().lower().replace(" ", "_") for col in df.columns]
+            
+            # Verifique as colunas para garantir que a transformação tenha sido correta
+            print(df.columns)  # Exibe as colunas normalizadas
 
             # Usa todas as colunas disponíveis no CSV
             colunas_disponiveis = df.columns.to_list()
@@ -355,16 +362,9 @@ def importar_itens():
                 nome = row.get(colunas_disponiveis[1])
                 quantidade = row.get(colunas_disponiveis[2])
                 preco = row.get(colunas_disponiveis[3])
-                data_entrada = row.get(colunas_disponiveis[4])
 
-                try:
-                    data_entrada = pd.to_datetime(data_entrada, errors='coerce').date()
-                    if pd.isna(data_entrada):
-                        flash(f"Data inválida para o item {nome}.", "warning")
-                        continue
-                except Exception:
-                    flash(f"Erro ao processar a data do item {nome}.", "warning")
-                    continue
+                # Usa a data atual para todos os itens
+                data_entrada = datetime.today().date()
 
                 # Verifica se o item já existe no banco
                 if not Item.query.filter_by(codigo=codigo).first():
@@ -379,6 +379,7 @@ def importar_itens():
             db.session.rollback()
 
     return redirect(url_for('estoque_total'))
+
 
 
 if __name__ == '__main__':
